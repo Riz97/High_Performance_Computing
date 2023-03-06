@@ -1,2 +1,0 @@
-da cluster a locale : scp rcaprile@linuxge.ge.infn.it:/home/rcaprile/Exercise1/Ex1.c /mnt/c/Users/ricky/Desktop/boh
-da locale a cluster : scp merda.txt rcaprile@linuxge.ge.infn.it:/home/rcaprile/Exercise1 (devo essere nella directory col file) 
