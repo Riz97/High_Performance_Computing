@@ -2,14 +2,20 @@
 //The following code performs a serial matrix multiplication. Try to parallelize it with OpenMP, acting only on the most important loop. 
 //Try also to add the timing functions before and after the loop and print the elapsed time.
 
+//Serial - Matrix size 2000 - 37.02
+//Parallelized - Matrix size 2000 - 16.23
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <omp.h>
 
 int main(int argc, char **argv)
 {
    int n;
    int i, j, k;
+
+double tdata= omp_get_wtime();
 
    if(argc != 2) {
       fprintf(stderr,"Usage: %s  matrix size\n", argv[0]);
@@ -34,17 +40,25 @@ int main(int argc, char **argv)
        exit(EXIT_FAILURE);
     }
 
+ 
+
    for (i=0; i<n; i++) 
       for (j=0; j<n; j++) {
          a[i][j] = ((double)rand())/((double)RAND_MAX);
          b[i][j] = ((double)rand())/((double)RAND_MAX);
          c[i][j] = 0.0;
       }
-
+   
+   
+   #pragma omp parallel for private(k,j)
    for (i=0; i<n; i++) 
      for (k=0; k<n; k++)  
         for (j=0; j<n; j++) 
           c[i][j] += a[i][k]*b[k][j];
+
+   
+      tdata = omp_get_wtime()-tdata;
+   printf("Task completed in %lf secs\n",tdata);    
 
    //check a random element
    i = rand()%n;
@@ -54,6 +68,8 @@ int main(int argc, char **argv)
       d += a[i][k]*b[k][j];
 
    printf("Check on a random element: %18.9lE\n", fabs(d-c[i][j]));
+
+   
 
    return 0;
 
