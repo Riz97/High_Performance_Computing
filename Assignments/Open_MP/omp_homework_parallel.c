@@ -68,7 +68,7 @@ int main(int argc, char* argv[]){
 int DFT(int idft, double* xr, double* xi, double* Xr_o, double* Xi_o, int N){
   int k, n;
 
-  #pragma omp parallel for num_threads(6)
+  #pragma omp parallel for num_threads(256)
   for (k=0 ; k<N ; k++)
   {
       for (n=0 ; n<N ; n++)  {
@@ -82,6 +82,7 @@ int DFT(int idft, double* xr, double* xi, double* Xr_o, double* Xi_o, int N){
 
   // normalize if you are doing IDFT
   if (idft==-1){
+    #pragma omp parallel for num_threads(256)
     for (n=0 ; n<N ; n++){
       Xr_o[n] /=N;
       Xi_o[n] /=N;
