@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <time.h>
 
 // Simple define to index into a 1D array from 2D space
 #define I2D(num, c, r) ((r)*(num)+(c))
@@ -66,12 +67,15 @@ void step_kernel_ref(int ni, int nj, float fact, float* temp_in, float* temp_out
 
 int main()
 {
+
+  clock_t start, end;
+  double time_used;
   int istep;
   int nstep = 200; // number of time steps
 
   // Specify our 2D dimensions
-  const int ni = 1000;
-  const int nj = 1000;
+  const int ni = 10000;
+  const int nj = 10000;
   float tfac = 8.418e-5; // thermal diffusivity of silver
 
   float *temp1_ref, *temp2_ref, *temp1, *temp2, *temp_tmp;
@@ -82,6 +86,8 @@ int main()
   temp2_ref = (float*)malloc(size);
   temp1 = (float*)malloc(size);
   temp2 = (float*)malloc(size);
+
+  //Da qua
 
   // Initialize with random data
   for( int i = 0; i < ni*nj; ++i) {
@@ -98,6 +104,8 @@ int main()
     temp2_ref= temp_tmp;
   }
 
+  start = clock();
+
   // Execute the modified version using same data
   for (istep=0; istep < nstep; istep++) {
     step_kernel_mod(ni, nj, tfac, temp1, temp2);
@@ -108,6 +116,9 @@ int main()
     temp2= temp_tmp;
   }
 
+  end = clock();
+  time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+
   float maxError = 0;
   // Output should always be stored in the temp1 and temp1_ref at this point
   for( int i = 0; i < ni*nj; ++i ) {
@@ -115,10 +126,14 @@ int main()
   }
 
   // Check and see if our maxError is greater than an error bound
-  if (maxError > 0.0005f)
+  if (maxError > 0.0005f){
+    
     printf("Problem! The Max Error of %.5f is NOT within acceptable bounds.\n", maxError);
+      
+  }
   else
     printf("The Max Error of %.5f is within acceptable bounds.\n", maxError);
+    printf("Elapsed time (s) = %.2lf\n", time_used);
 
   free( temp1_ref );
   free( temp2_ref );
